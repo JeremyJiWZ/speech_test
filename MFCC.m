@@ -45,3 +45,17 @@ max2 = max(max(all_scores(:,:,2)));
 max3 = max(max(all_scores(:,:,3)));
 
 min1 = min(min(min(all_scores)));
+means = mean(mean(mean(all_scores)));
+threshold = min1*0.2+means*0.8;
+srcPath = 'test/';
+srcNum = 12;
+scores = zeros(srcNum);
+for i=1:srcNum
+    srcName = [srcPath num2str(i) '.wav'];
+    [wav_data,fs] = readwav(srcName);
+    test_feature = melcepst(wav_data,fs);
+    [lYM,lY] = lmultigauss(test_feature', mu_model,sigma_model, weight_model); %与模型进行比较
+    scores(i) = mean(lY); %获得评分
+    if(scores(i)<threshold) fprintf('%d is not the origin speaker\n',i); end
+    
+end
